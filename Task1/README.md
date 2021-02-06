@@ -42,11 +42,11 @@ NNI的安装非常简单，只需一行命令即可：
 ```
 $ pip install --upgrade nni
 ```
-![](./code/安装.png)
+![](./code/安装.jpg)
 
 可视化的web UI
 
-![](./code/使用.png)
+![](./code/使用.jpg)
 
 ### 3. NNI 使用感受
 

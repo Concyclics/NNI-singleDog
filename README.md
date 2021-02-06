@@ -13,15 +13,15 @@
 
 - [x] Task 1
 - [ ] Task 2
-  - [x] Task 2.1
+  - [ ] Task 2.1
   - [ ] Task 2.2
 - [ ] Task 3
-  - [x] Task 3.1
+  - [ ] Task 3.1
   - [ ] Task 3.2
     - [ ] Task 3.2.1
     - [ ] Task 3.2.2
 - [ ] Task 4
-  - [x] Task 4 项目启动报告
+  - [ ] Task 4 项目启动报告
 
 ## 3. 补充信息
 

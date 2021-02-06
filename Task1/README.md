@@ -50,10 +50,90 @@ $ pip install --upgrade nni
 
 ### 3. NNI 使用感受
 
-<br>
+安装和使用都比较方便，作为入门来说很有学习价值。
 
 ## NNI 样例分析文档
 
-包括配置文件、代码、实现、结果等。
+### 配置文件：experiment_config.yml
 
-<br>
+```
+authorName: default
+experimentName: example_mnist_pytorch
+trialConcurrency: 1
+maxExecDuration: 2h
+maxTrialNum: 10
+#choice: local, remote, pai
+trainingServicePlatform: local
+searchSpacePath: search_space.json
+#choice: true, false
+useAnnotation: false
+tuner:
+  #choice: TPE, Random, Anneal, Evolution, BatchTuner, MetisTuner, GPTuner
+  #SMAC (SMAC should be installed through nnictl)
+  builtinTunerName: TPE
+  classArgs:
+    #choice: maximize, minimize
+    optimize_mode: maximize
+trial:
+  command: python mnist.py
+  codeDir: .
+  gpuNum: 0
+```
+
+### 搜索空间：search_space.json
+
+```json
+{
+    "batch_size": {"_type":"choice", "_value": [16, 32, 64, 128]},
+    "hidden_size":{"_type":"choice","_value":[128, 256, 512, 1024]},
+    "lr":{"_type":"choice","_value":[0.0001, 0.001, 0.01, 0.1]},
+    "momentum":{"_type":"uniform","_value":[0, 1]}
+}
+```
+### 代码
+
+代码部分只需要在原有PyTorch代码上进行些许修改。
+
+1. 参数选择无需在程序中给定，而是通过nni获得：
+```python
+tuner_params = nni.get_next_parameter()
+```
+获得的参数是一个dict对象，通过搜索空间定义的名称可索引出对应的参数值。
+
+1. 训练中途，报告中间结果：
+```python
+nni.report_intermediate_result(test_acc)
+```
+可在间隔若干个epoch后报告中间结果，也可在间隔若干时间后报告中间结果。
+
+3. 在训练完整结束后，报告最终结果：
+```python
+nni.report_final_result(test_acc)
+```
+报告的最终结果作为训练的default metric，用于不同trial之间的比较。
+
+#### 结果
+
+如图，10次trial都成功地完成，其中id为9的trial达到了最高准确率，达99.34%。
+
+![](./Images/1.png)
+
+![](./images/4.png)
+
+#### 超参组合可视化
+
+![](./images/5.png)
+
+图中，准确率更高的组合用红线表示，而准确率低的用绿线表示。
+
+可以看出，当batch_size选择16，lr和momentum大小适中时，模型可以达到99%以上的准确率，实验效果非常理想。
+
+#### 训练结果可视化
+
+![](./images/3.png)
+
+![](./images/2.png)
+
+![](./images/6.png)
+
+![](./images/7.png)
